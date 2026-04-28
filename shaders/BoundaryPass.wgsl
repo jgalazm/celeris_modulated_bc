@@ -132,6 +132,14 @@ fn SolitaryWave(idx: vec2<i32>, x0: f32, y0: f32, theta: f32) -> vec4<f32> {
     return vec4<f32>(eta, hu, hv, 0.0);
 }
 
+fn rect_suave(x: f32, centro: f32, ancho: f32, suavizado: f32) -> f32 {
+    let mitad = ancho * 0.5;
+    let i = centro - mitad;
+    let d = centro + mitad;
+    
+    return smoothstep(i - suavizado, i, x) * (1.0 - smoothstep(d, d + suavizado, x));
+}
+
 fn sineWave(x: f32, y: f32, t: f32, d: f32, amplitude: f32, period: f32, theta: f32, phase: f32, current_boundary: i32) -> vec3<f32> {
     let omega = 2.0 * globals.PI / period;
     let k = calc_wavenumber_approx(omega, d);
@@ -159,6 +167,11 @@ fn sineWave(x: f32, y: f32, t: f32, d: f32, amplitude: f32, period: f32, theta: 
     if(num_waves > 0){
         eta = eta * max(0.0, min(1.0, ((f32(num_waves) * period - t)/(period))));
     }
+    let eta_b = eta;
+
+    eta = rect_suave(y, 300.0, 100.0, 50) * eta_b;
+    eta = eta + rect_suave(y, 600.0, 100.0, 50) * eta_b;
+    // eta = rect_suave(y, 500.0, 100.0, 50) * eta; 
     let speed = globals.boundary_g * eta / (c * k) * tanh(k * d);
     let hu = speed * cos(theta_mod);
     let hv = speed * sin(theta_mod);
