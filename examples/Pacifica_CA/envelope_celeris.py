@@ -152,7 +152,7 @@ def apply_envelope_to_table(
     """
     Parameters
     ----------
-    table : (N, 4) array con columnas [|hat_eta|, T, theta_deg, phi]
+    table : (N, 4) array con columnas [|hat_eta|, T, theta_rad, phi_rad]
     h     : profundidad usada en la dispersión
     envelope : Envelope con (a, b, B, Bhat)
     y_max : máximo |y| (m) en el que la nueva tabla debe reproducir bien la
@@ -166,7 +166,7 @@ def apply_envelope_to_table(
 
     Returns
     -------
-    new_table : (M, 4) array con columnas [|hat_eta|', T, theta_deg', phi'].
+    new_table : (M, 4) array con columnas [|hat_eta|', T, theta_rad', phi_rad'].
         Cada fila i del input genera una banda de modos con el mismo T
         (la envolvente no afecta omega) y una distribución de θ que muestrea
         la convolución hat_B(λ - λ_i).
@@ -176,7 +176,7 @@ def apply_envelope_to_table(
 
     # Λ y |κ| para cada fila original
     kappa_i  = np.array([wavenumber_from_period(T, h) for T in T_in])
-    lambda_i = kappa_i * np.sin(np.deg2rad(th_in))
+    lambda_i = kappa_i * np.sin((th_in))
 
     # Grilla de lambdas: cubre los λ_i + ancho espectral de B + padding.
     L = envelope.b - envelope.a
@@ -194,7 +194,7 @@ def apply_envelope_to_table(
         # Convolución en λ: para cada modo i, hat_B(λ - λ_i).
         Bhat_shift = envelope.Bhat(lam_grid - lambda_i[i])
         # Peso complejo del modo original (en formato coseno):
-        c_i = A_in[i] * np.exp(1j * phi_in[i])
+        c_i = A_in[i] * np.exp(1j * (phi_in[i]))
         # Densidad espectral resultante en λ (a omega = omega_i fija). El
         # factor de discretización Δλ/(2π) convierte la integral inversa
         # de Fourier en una suma de modos discretos.
@@ -207,7 +207,7 @@ def apply_envelope_to_table(
         # propagantes |λ'| ≤ |κ_i| (los evanescentes no se generan).
         sin_th = lam_grid / kappa_i[i]
         prop = np.abs(sin_th) <= 1.0
-        theta_p = np.rad2deg(np.arcsin(np.clip(sin_th[prop], -1.0, 1.0)))
+        theta_p = np.arcsin(np.clip(sin_th[prop], -1.0, 1.0))
 
         for amp_j, theta_j, phi_j in zip(amp[prop], theta_p, phase[prop]):
             rows.append((amp_j, T_in[i], theta_j, phi_j))
@@ -231,7 +231,7 @@ def eta_from_table(table: np.ndarray, h: float,
     eta = np.zeros_like(y, dtype=float)
     for A, T, th, phi in table:
         kappa = wavenumber_from_period(T, h)
-        lam   = kappa * np.sin(np.deg2rad(th))
+        lam   = kappa * np.sin((th))
         omega = 2.0 * np.pi / T
-        eta  += A * np.cos(lam * y - omega * t + phi)
+        eta  += A * np.cos(lam * y - omega * t + (phi))
     return eta
