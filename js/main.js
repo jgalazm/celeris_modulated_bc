@@ -379,28 +379,28 @@ async function initializeWebGPUApp(configContent, bathymetryContent, waveContent
     calc_constants.IsGMMapLoaded = 0;
     calc_constants.IsSatMapLoaded = 0;
     if (calc_constants.GoogleMapOverlay == 1) {  // if using GM overlay
-        try {
-            let ImageGoogleMap = await CreateGoogleMapImage(device, context, calc_constants.lat_LL, calc_constants.lon_LL, calc_constants.lat_UR, calc_constants.lon_UR, calc_constants.GMapImageWidth, calc_constants.GMapImageHeight);
+        // try {
+        //     let ImageGoogleMap = await CreateGoogleMapImage(device, context, calc_constants.lat_LL, calc_constants.lon_LL, calc_constants.lat_UR, calc_constants.lon_UR, calc_constants.GMapImageWidth, calc_constants.GMapImageHeight);
 
-            console.log('Google Maps image loaded, dimensions:', ImageGoogleMap.width, 'x', ImageGoogleMap.height);
+        //     console.log('Google Maps image loaded, dimensions:', ImageGoogleMap.width, 'x', ImageGoogleMap.height);
 
-            // Now that the image is loaded, you can copy it to the texture.
-            copyImageBitmapToTexture(device, ImageGoogleMap, txGoogleMap)
+        //     // Now that the image is loaded, you can copy it to the texture.
+        //     copyImageBitmapToTexture(device, ImageGoogleMap, txGoogleMap)
 
-            transforms = calculateGoogleMapScaleAndOffset(calc_constants.lat_LL, calc_constants.lon_LL, calc_constants.lat_UR, calc_constants.lon_UR, calc_constants.GMapImageWidth, calc_constants.GMapImageHeight);
-            calc_constants.GMscaleX = transforms.scaleX;
-            calc_constants.GMscaleY = transforms.scaleY;
-            calc_constants.GMoffsetX = transforms.offsetX;
-            calc_constants.GMoffsetY = transforms.offsetY;
+        //     transforms = calculateGoogleMapScaleAndOffset(calc_constants.lat_LL, calc_constants.lon_LL, calc_constants.lat_UR, calc_constants.lon_UR, calc_constants.GMapImageWidth, calc_constants.GMapImageHeight);
+        //     calc_constants.GMscaleX = transforms.scaleX;
+        //     calc_constants.GMscaleY = transforms.scaleY;
+        //     calc_constants.GMoffsetX = transforms.offsetX;
+        //     calc_constants.GMoffsetY = transforms.offsetY;
 
-            txOverlayMap = txGoogleMap;
-            calc_constants.IsGMMapLoaded = 1;
-            calc_constants.IsOverlayMapLoaded = 1;
-        }
-        catch {
-            console.log('Unable to load Google Maps overlay')
-            calc_constants.GoogleMapOverlay == 0
-        }
+        //     txOverlayMap = txGoogleMap;
+        //     calc_constants.IsGMMapLoaded = 1;
+        //     calc_constants.IsOverlayMapLoaded = 1;
+        // }
+        // catch {
+        //     console.log('Unable to load Google Maps overlay')
+        //     calc_constants.GoogleMapOverlay == 0
+        // }
     }    
     
     // for examples, see if there is an overlay file to load
