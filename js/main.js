@@ -1129,75 +1129,75 @@ async function initializeWebGPUApp(configContent, bathymetryContent, waveContent
     Copytxf32_txf16_view.setFloat32(12, calc_constants.base_depth, true);           // f32
 
     // Fetch the source code of various shaders used in the application.
-    const Pass0_ShaderCode = await fetchShader('/shaders/Pass0.wgsl');
+    const Pass0_ShaderCode = await fetchShader('./shaders/Pass0.wgsl');
     var Pass1_ShaderCode = null;
     if (calc_constants.Accuracy_mode == 1) {
         console.log("Using 4th-order MUSCL-TVD reconstruction scheme in Pass1");
-        Pass1_ShaderCode = await fetchShader('/shaders/Pass1_HighOrder.wgsl');
+        Pass1_ShaderCode = await fetchShader('./shaders/Pass1_HighOrder.wgsl');
     } else {
-        Pass1_ShaderCode = await fetchShader('/shaders/Pass1.wgsl');
+        Pass1_ShaderCode = await fetchShader('./shaders/Pass1.wgsl');
     }
     var Pass2_ShaderCode = null;
     if (calc_constants.Accuracy_mode == 1) {
         console.log("Using HLLC Flux Solver in Pass2");
-        Pass2_ShaderCode = await fetchShader('/shaders/Pass2_HighOrder_HLLC.wgsl');  
+        Pass2_ShaderCode = await fetchShader('./shaders/Pass2_HighOrder_HLLC.wgsl');  
     } else {
-        Pass2_ShaderCode = await fetchShader('/shaders/Pass2.wgsl');  
+        Pass2_ShaderCode = await fetchShader('./shaders/Pass2.wgsl');  
     }
-    const PassBreaking_ShaderCode = await fetchShader('/shaders/Pass_Breaking.wgsl'); 
-    const Pass3A_Coulwave_ShaderCode= await fetchShader('/shaders/Pass3A_COULWAVE.wgsl')
-    const Pass3B_Coulwave_ShaderCode= await fetchShader('/shaders/Pass3B_COULWAVE.wgsl')
-    const Pass3_ShaderCode_NLSW = await fetchShader('/shaders/Pass3_NLSW.wgsl')
-    var Pass3_ShaderCode_Bous = await fetchShader('/shaders/Pass3_Bous.wgsl');
+    const PassBreaking_ShaderCode = await fetchShader('./shaders/Pass_Breaking.wgsl'); 
+    const Pass3A_Coulwave_ShaderCode= await fetchShader('./shaders/Pass3A_COULWAVE.wgsl')
+    const Pass3B_Coulwave_ShaderCode= await fetchShader('./shaders/Pass3B_COULWAVE.wgsl')
+    const Pass3_ShaderCode_NLSW = await fetchShader('./shaders/Pass3_NLSW.wgsl')
+    var Pass3_ShaderCode_Bous = await fetchShader('./shaders/Pass3_Bous.wgsl');
     if (calc_constants.NLSW_or_Bous == 1) {
         console.log("Using Celeris equations in Boussinesq mode");
     }
     else if (calc_constants.NLSW_or_Bous == 2) {
         console.log("Using COULWAVE equations in Boussinesq mode");
-        Pass3_ShaderCode_Bous = await fetchShader('/shaders/Pass3_COULWAVE.wgsl');
+        Pass3_ShaderCode_Bous = await fetchShader('./shaders/Pass3_COULWAVE.wgsl');
     }
     
-    const SedTrans_Pass1_ShaderCode = await fetchShader('/shaders/SedTrans_Pass1.wgsl');
-    const SedTrans_Pass3_ShaderCode = await fetchShader('/shaders/SedTrans_Pass3.wgsl')
-    const BoundaryPass_ShaderCode = await fetchShader('/shaders/BoundaryPass.wgsl');
+    const SedTrans_Pass1_ShaderCode = await fetchShader('./shaders/SedTrans_Pass1.wgsl');
+    const SedTrans_Pass3_ShaderCode = await fetchShader('./shaders/SedTrans_Pass3.wgsl')
+    const BoundaryPass_ShaderCode = await fetchShader('./shaders/BoundaryPass.wgsl');
     
     var TridiagX_ShaderCode = null; var TridiagY_ShaderCode = null;  //we can likely fold thee back into a single shader
     if (calc_constants.NLSW_or_Bous == 2) {
-        TridiagX_ShaderCode = await fetchShader('/shaders/TriDiag_PCRx_COULWAVE.wgsl');
-        TridiagY_ShaderCode = await fetchShader('/shaders/TriDiag_PCRy_COULWAVE.wgsl');
+        TridiagX_ShaderCode = await fetchShader('./shaders/TriDiag_PCRx_COULWAVE.wgsl');
+        TridiagY_ShaderCode = await fetchShader('./shaders/TriDiag_PCRy_COULWAVE.wgsl');
     } else {
-        TridiagX_ShaderCode = await fetchShader('/shaders/TriDiag_PCRx.wgsl');
-        TridiagY_ShaderCode = await fetchShader('/shaders/TriDiag_PCRy.wgsl');
+        TridiagX_ShaderCode = await fetchShader('./shaders/TriDiag_PCRx.wgsl');
+        TridiagY_ShaderCode = await fetchShader('./shaders/TriDiag_PCRy.wgsl');
     }
 
-    const SedTrans_UpdateBottom_ShaderCode = await fetchShader('/shaders/SedTrans_UpdateBottom.wgsl');
-    const Updateneardry_ShaderCode = await fetchShader('/shaders/Update_neardry.wgsl');
+    const SedTrans_UpdateBottom_ShaderCode = await fetchShader('./shaders/SedTrans_UpdateBottom.wgsl');
+    const Updateneardry_ShaderCode = await fetchShader('./shaders/Update_neardry.wgsl');
     
     var UpdateTrid_ShaderCode = null;  // we can likely fold these back into a single shader
     if (calc_constants.NLSW_or_Bous == 2) {
-        UpdateTrid_ShaderCode = await fetchShader('/shaders/Update_TriDiag_coef_COULWAVE.wgsl');
+        UpdateTrid_ShaderCode = await fetchShader('./shaders/Update_TriDiag_coef_COULWAVE.wgsl');
     } else {
-        UpdateTrid_ShaderCode = await fetchShader('/shaders/Update_TriDiag_coef.wgsl');
+        UpdateTrid_ShaderCode = await fetchShader('./shaders/Update_TriDiag_coef.wgsl');
     }
 
-    const CalcMeans_ShaderCode = await fetchShader('/shaders/CalcMeans.wgsl');
-    const CalcWaveHeight_ShaderCode = await fetchShader('/shaders/CalcWaveHeight.wgsl');
-    const AddDisturbance_ShaderCode = await fetchShader('/shaders/AddDisturbance.wgsl');
-    const MouseClickChange_ShaderCode = await fetchShader('/shaders/MouseClickChange.wgsl');
-    const ExtractTimeSeries_ShaderCode = await fetchShader('/shaders/ExtractTimeSeries.wgsl');
+    const CalcMeans_ShaderCode = await fetchShader('./shaders/CalcMeans.wgsl');
+    const CalcWaveHeight_ShaderCode = await fetchShader('./shaders/CalcWaveHeight.wgsl');
+    const AddDisturbance_ShaderCode = await fetchShader('./shaders/AddDisturbance.wgsl');
+    const MouseClickChange_ShaderCode = await fetchShader('./shaders/MouseClickChange.wgsl');
+    const ExtractTimeSeries_ShaderCode = await fetchShader('./shaders/ExtractTimeSeries.wgsl');
 
-    const Skybox_vertexShaderCode = await fetchShader('/shaders/skybox.vertex.wgsl');
-    const Skybox_fragmentShaderCode = await fetchShader('/shaders/skybox.fragment.wgsl');
-    //const Duck_vertexShaderCode = await fetchShader('/shaders/duck.vertex.wgsl');
-    //const Duck_fragmentShaderCode = await fetchShader('/shaders/duck.fragment.wgsl');
-    const Model_vertexShaderCode = await fetchShader('/shaders/model.vertex.wgsl');
-    const Model_fragmentShaderCode = await fetchShader('/shaders/model.fragment.wgsl');
+    const Skybox_vertexShaderCode = await fetchShader('./shaders/skybox.vertex.wgsl');
+    const Skybox_fragmentShaderCode = await fetchShader('./shaders/skybox.fragment.wgsl');
+    //const Duck_vertexShaderCode = await fetchShader('./shaders/duck.vertex.wgsl');
+    //const Duck_fragmentShaderCode = await fetchShader('./shaders/duck.fragment.wgsl');
+    const Model_vertexShaderCode = await fetchShader('./shaders/model.vertex.wgsl');
+    const Model_fragmentShaderCode = await fetchShader('./shaders/model.fragment.wgsl');
 
-    const vertexShaderCode = await fetchShader('/shaders/vertex.wgsl');
-    const vertex3DShaderCode = await fetchShader('/shaders/vertex3D.wgsl');
-    const fragmentShaderCode = await fetchShader('/shaders/fragment.wgsl');
+    const vertexShaderCode = await fetchShader('./shaders/vertex.wgsl');
+    const vertex3DShaderCode = await fetchShader('./shaders/vertex3D.wgsl');
+    const fragmentShaderCode = await fetchShader('./shaders/fragment.wgsl');
 
-    const Copytxf32_txf16_ShaderCode = await fetchShader('/shaders/Copytxf32_txf16.wgsl');
+    const Copytxf32_txf16_ShaderCode = await fetchShader('./shaders/Copytxf32_txf16.wgsl');
     console.log("Shaders loaded.");
 
     // Configure the pipelines, one for each shader.
